@@ -29,7 +29,7 @@ JOBS = [
         "title": "DevOps Engineer",
         "company": "CloudOps",
         "location": "Remote",
-        "description": "Docker Kubernetes AWS CI/CD Linux""
+        "description": "Docker Kubernetes AWS CI/CD Linux"
     }
     
 ]
