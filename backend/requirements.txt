@@ -1,8 +1,4 @@
 fastapi
 uvicorn
-numpy
-scikit-learn
-sentence-transformers
 psycopg2-binary
 requests
-apscheduler
