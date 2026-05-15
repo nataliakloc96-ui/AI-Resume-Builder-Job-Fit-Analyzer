@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>AI Resume Analyzer</title>
+</head>
+<body>
+
+<h1>Resume Analyzer</h1>
+
+<textarea id="cv" rows="12" cols="80"></textarea>
+<br>
+<button onclick="match()">Match Jobs</button>
+
+<div id="result"></div>
+
+<script>
+const API = "https://ai-resume-builder-job-fit-analyzer.onrender.com";
+
+
+async function match() {
+    const cv = document.getElementById("cv").value;
+
+    const res = await fetch(`${API}/match`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ cv })
+    });
+
+    const data = await res.json();
+
+    const div = document.getElementById("results");
+
+    div.innerHTML = data.matches.map(job => `
+        <div style="border:1px solid #ccc;padding:15px;margin:10px;">
+            <h2>${job.title}</h2>
+            <b>${job.company}</b><br>
+            ${job.location}<br><br>
+
+            <h3>Match: ${job.score}%</h3>
+            <p>${job.reason}</p>
+        </div>
+    `).join("");
+}
+</script>
+
+</body>
+</html>
