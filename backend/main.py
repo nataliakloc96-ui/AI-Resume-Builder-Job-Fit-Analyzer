@@ -1,6 +1,6 @@
 from fastapi import FastAPI, UploadFile, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-import ai import score_cv_job
+from ai import score_cv_job
 import pdfplumber
 
 app = FastAPI()
