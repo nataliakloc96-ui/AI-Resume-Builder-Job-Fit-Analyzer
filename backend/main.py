@@ -77,7 +77,7 @@ def match(payload: dict):
 
         results = []
 
-        for job i JOBS:
+        for job in JOBS:
             score = score_cv_job(cv, job["description"])
 
             results.append({
