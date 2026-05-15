@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from config import FRONTEND_URL
-from router import match, jobs
+from routes import match, jobs
 
 
 app = FastAPI()
