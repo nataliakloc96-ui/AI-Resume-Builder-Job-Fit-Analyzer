@@ -24,50 +24,58 @@ app.include_router(jobs.router)
 def health():
     return {"status": "ok"}
 
+
 @app.post("/match")
 def match(data: dict):
 
-    cv = data.get("cv", "")
+    cv = data.get("cv", "").lower()
 
     jobs = [
         {
             "title": "Python Backend Developer",
             "company": "TechCorp",
             "location": "Remote",
-            "description": "Python FastAPI PostgreSQL REST API Docker"
+            "description": "python fastapi postgresql docker api"
         },
         {
             "title": "DevOps Engineer",
             "company": "CloudOps",
             "location": "EU",
-            "description": "Docker AWS Linux Kubernetes"
+            "description": "docker aws linux kubernetes"
         },
         {
             "title": "Data Engineer",
             "company": "DataWorks",
             "location": "Remote",
-            "description": "Python SQL PostgreSQL API"
+            "description": "python sql postgresql api"
         }
-        
     ]
 
-    results = []
+    matches = []
 
     for job in jobs:
-        result = score_cv_job(cv, job["description"])
 
-        results.append({
+        score = 0
+        strengths = []
+        missing = []
+
+        for skill in job["description"].split():
+
+            if skill in cv:
+                score += 15
+                strengths.append(skill)
+            else:
+                missing.append(skill)
+
+        matches.append({
             "title": job["title"],
             "company": job["company"],
             "location": job["location"],
-            "score": result["score"],
-            "strengths": result["strengths"],
-            "missing_skills": result["missing_skills"]
-
+            "score": min(score, 100),
+            "strengths": strengths,
+            "missing_skills": missing
         })
-    
-    results.sort(key=lambda x: x["score"], reverse=True)
 
-    
-    return {"matches": results}
+    matches.sort(key=lambda x: x["score"], reverse=True)
 
+    return {"matches": matches}
