@@ -1,28 +1,32 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>AI Resume Analyzer</title>
+    <title>AI Resume Builder</title>
 </head>
 <body>
 
-<h1>Resume Analyzer</h1>
+<h1>AI Resume Builder + Job Fit Analyzer</h1>
 
-<textarea id="cv" rows="12" cols="80"></textarea>
-<br>
-<button onclick="match()">Match Jobs</button>
+<textarea id="cv" rows="15" cols="80"></textarea>
+<br><br>
 
-<div id="result"></div>
+<button onclick="match()">Analyze</button>
+
+<hr>
+
+<div id="results"></div>
 
 <script>
 const API = "https://ai-resume-builder-job-fit-analyzer.onrender.com";
-
 
 async function match() {
     const cv = document.getElementById("cv").value;
 
     const res = await fetch(`${API}/match`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+            "Content-Type": "application/json"
+        },
         body: JSON.stringify({ cv })
     });
 
@@ -30,12 +34,9 @@ async function match() {
 
     const results = document.getElementById("results");
 
-    if (!results) {
-        console.error("Missing #results div");
-        return;
-    }
-
-    results.innerHTML = JSON.stringify(data, null, 2);
+    results.innerHTML = `
+        <pre>${JSON.stringify(data, null, 2)}</pre>
+    `;
 }
 </script>
 
