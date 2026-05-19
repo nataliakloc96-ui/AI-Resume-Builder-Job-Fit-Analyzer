@@ -1,3 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>AI Resume Builder</title>
+</head>
+<body>
+
+<h1>AI Resume Builder + Job Fit Analyzer</h1>
+
+<textarea id="cv" rows="15" cols="80"></textarea>
+<br><br>
+
+<button onclick="match()">Analyze</button>
+
+<hr>
+
+<div id="results"></div>
+
 <script>
 const API = "https://ai-resume-builder-job-fit-analyzer.onrender.com";
 
@@ -51,3 +69,5 @@ async function match() {
     }
 }
 </script>
+</body>
+</html>
