@@ -15,10 +15,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.include_router(match.router)
-app.include_router(jobs.router)
-
-
 
 @app.get("/health")
 def health():
@@ -62,7 +58,7 @@ def match(data: dict):
         for skill in job["description"].split():
 
             if skill in cv:
-                score += 15
+                score += 20
                 strengths.append(skill)
             else:
                 missing.append(skill)
