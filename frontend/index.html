@@ -34,9 +34,25 @@ async function match() {
 
     const results = document.getElementById("results");
 
-    results.innerHTML = `
-        <pre>${JSON.stringify(data, null, 2)}</pre>
-    `;
+    results.innerHTML = data.matches.map(job => `
+    <div style="border:1px solid #ccc;padding:20px;margin:20px;">
+    <h2>${job.title}</h2>
+    <b>${job.company}</b><br>
+    ${job.location}
+
+    <h3>Match Score: ${job.score}%</h3>
+
+    <b>Strengths:</b>
+    <ul>
+        ${job.strengths.map(s => `<li>${s}</li>`).join("")}
+    </ul>
+
+    <b>Missing Skills:</b>
+    <ul>
+        ${job.missing_skills.map(s => `<li>${s}</li>`).join("")}
+    </ul>
+</div>
+`).join("");
 }
 </script>
 
