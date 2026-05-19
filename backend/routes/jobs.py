@@ -13,9 +13,9 @@ def get_jobs():
 
     conn.close()
 
-    return (
+    return {
         "jobs": [
             {"title": r[0], "company": r[1], "location": r[2]}
             for r in rows
         ]
-    )
+    }
