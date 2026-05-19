@@ -5,7 +5,7 @@ from config import FRONTEND_URL
 from routes import match, jobs
 from db import get_conn
 from init_db import init_db
-from ai_service import score_cv_job
+from services.ai_service import score_cv_job
 
 
 app = FastAPI()
