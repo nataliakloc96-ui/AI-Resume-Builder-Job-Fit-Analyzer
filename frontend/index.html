@@ -28,18 +28,14 @@ async function match() {
 
     const data = await res.json();
 
-    const div = document.getElementById("results");
+    const results = document.getElementById("results");
 
-    div.innerHTML = data.matches.map(job => `
-        <div style="border:1px solid #ccc;padding:15px;margin:10px;">
-            <h2>${job.title}</h2>
-            <b>${job.company}</b><br>
-            ${job.location}<br><br>
+    if (!results) {
+        console.error("Missing #results div");
+        return;
+    }
 
-            <h3>Match: ${job.score}%</h3>
-            <p>${job.reason}</p>
-        </div>
-    `).join("");
+    results.innerHTML = JSON.stringify(data, null, 2);
 }
 </script>
 
