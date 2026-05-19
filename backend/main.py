@@ -3,6 +3,9 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from config import FRONTEND_URL
 from routes import match, jobs
+from db import get_conn
+from init_db import init_db
+from ai_service import score_cv_job
 
 
 app = FastAPI()
@@ -15,6 +18,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+init_db()
 
 @app.get("/health")
 def health():
@@ -25,6 +29,15 @@ def health():
 def match(data: dict):
 
     cv = data.get("cv", "").lower()
+
+    conn = get_conn()
+    cur = conn.cursor()
+
+    cur.execute(
+        "INSERT INTO cv_profiles (cv_text) VALUES (%s) RETURNING id",
+        (cv,)
+    )
+    cv_id = cur.fetchone()[0]
 
     jobs = [
         {
@@ -51,17 +64,20 @@ def match(data: dict):
 
     for job in jobs:
 
-        score = 0
-        strengths = []
-        missing = []
+        result = score_cv_job(cv, job["description"])
 
-        for skill in job["description"].split():
+        cursor.execute("""
+            INSERT INTO job_matches
+            (cv_id, job_title, score, strengths, missing_skills)
+            VALUES (%s, %s, %s, %s, %s)
+        """, (
+            cv_id,
+            job["title"],
+            result["score"],
+            ",".join(result["strengths"]),
+            ",".join(result["missing_skills"])
+        ))
 
-            if skill in cv:
-                score += 20
-                strengths.append(skill)
-            else:
-                missing.append(skill)
 
         matches.append({
             "title": job["title"],
@@ -71,6 +87,10 @@ def match(data: dict):
             "strengths": strengths,
             "missing_skills": missing
         })
+
+    conn.commit()
+    cursor.close()
+    conn.close()
 
     matches.sort(key=lambda x: x["score"], reverse=True)
 
