@@ -6,6 +6,7 @@ from routes import match, jobs
 from db import get_conn
 from init_db import init_db
 from services.ai_service import score_cv_job
+from auth import hash_password, verify_password, create_token
 
 
 app = FastAPI()
@@ -95,3 +96,45 @@ def match(data: dict):
     matches.sort(key=lambda x: x["score"], reverse=True)
 
     return {"matches": matches}
+
+@app.post("/register")
+def register(data: dict):
+
+    conn = get_conn()
+    cursor = conn.cursor()
+
+    email = data["email"]
+    password = hash_password(data["password"])
+
+    cursor.execute(
+        "INSERT INTO users (email, password) VALUES (%s, %s)",
+        (email, password)
+    )
+
+    conn.commit()
+    cursor.close()
+    conn.close()
+
+    return {"status": "registered"}
+
+@app.post("/login")
+def login(data: dict):
+    conn = get_conn()
+    cursor = conn.cursor()
+
+    cursor.execute(
+        "SELECT password FROM users WHERE email=%s",
+        (data["email"],)
+    )
+
+    row = cursor.fetchone()
+
+    if not row:
+        return {"error": "User not found"}
+    
+    if not verify_password(data["password"], row[0]):
+        return{"error": "Wrong password"}
+    
+    token = create_token(data["email"])
+
+    return {"token": token}
