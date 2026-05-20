@@ -11,6 +11,8 @@ from auth import hash_password, verify_password, create_token
 
 app = FastAPI()
 
+init_db()
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -19,7 +21,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-init_db()
+
 
 @app.get("/health")
 def health():
