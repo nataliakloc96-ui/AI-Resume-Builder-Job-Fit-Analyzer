@@ -103,38 +103,56 @@ def register(data: dict):
     conn = get_conn()
     cursor = conn.cursor()
 
-    email = data["email"]
-    password = hash_password(data["password"])
+    try:
+        email = data["email"]
+        password = hash_password(data["password"])
 
-    cursor.execute(
-        "INSERT INTO users (email, password) VALUES (%s, %s)",
-        (email, password)
-    )
+        cursor.execute(
+            "INSERT INTO users (email, password) VALUES (%s, %s)",
+            (email, password)
+        )
+        conn.commit()
 
-    conn.commit()
-    cursor.close()
-    conn.close()
+        return {"status": "registered"}
+    
+    except Exception as e:
+        conn.rollback()
+        return {"error": str(e)}
+    
+    finally:
+        cursor.close()
+        conn.close()
 
-    return {"status": "registered"}
 
 @app.post("/login")
 def login(data: dict):
+
     conn = get_conn()
     cursor = conn.cursor()
 
-    cursor.execute(
-        "SELECT password FROM users WHERE email=%s",
-        (data["email"],)
-    )
+    try: 
+        cursor.execute(
+            "SELECT password FROM users WHERE email=%s",
+            (data["email"],)
+        )
 
-    row = cursor.fetchone()
+        row = cursor.fetchone()
 
-    if not row:
-        return {"error": "User not found"}
+        if not row:
+            return {"error": "User not found"}
     
-    if not verify_password(data["password"], row[0]):
-        return{"error": "Wrong password"}
+        if not verify_password(data["password"], row[0]):
+            return{"error": "Wrong password"}
     
-    token = create_token(data["email"])
+        token = create_token(data["email"])
 
-    return {"token": token}
+        return {"token": token}
+    
+    except Exception as e:
+        return {"error": str(e)}
+    
+    finally:
+        cursor.close()
+        conn.close()
+
+    
