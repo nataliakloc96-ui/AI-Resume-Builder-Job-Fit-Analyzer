@@ -8,10 +8,10 @@ SECRET = os.getenv("JWT_SECRET", "supersecret")
 pwd = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 def hash_password(password):
-    return pwd.hash(password)
+    return pwd.hash(password[:72])
 
 def verify_password(password, hashed):
-    return pwd.verify(password, hashed)
+    return pwd.verify(password[:72], hashed)
 
 def create_token(email):
     payload = {
