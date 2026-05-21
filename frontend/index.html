@@ -33,51 +33,48 @@ Load History
 const API = "https://ai-resume-builder-job-fit-analyzer.onrender.com";
 
 async function match() {
-    const results = document.getElementById("results");
+
     const cv = document.getElementById("cv").value;
 
-    results.innerHTML = "Loading...";
+    const res = await fetch(`${API}/match`, {
+        method:"POST",
+        headers:{
+            "Content-Type":"application/json"
+        },
+        body:JSON.stringify({ cv })
+    });
 
-    try {
-        const response = await fetch(`${API}/match`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({ cv: cv })
-        });
+    const data = await res.json();
 
-        const data = await response.json();
+    console.log(data);
 
-        console.log(data);
-
-        results.innerHTML = "";
-
-        data.matches.forEach(job => {
-            results.innerHTML += `
-                <div style="border:1px solid #ccc; padding:20px; margin:20px;">
-                    <h2>${job.title}</h2>
-                    <p>${job.company}</p>
-                    <p>${job.location}</p>
-                    <h3>${job.score}% match</h3>
-
-                    <b>Strengths:</b>
-                    <ul>
-                        ${job.strengths.map(s => `<li>${s}</li>`).join("")}
-                    </ul>
-
-                    <b>Missing:</b>
-                    <ul>
-                        ${job.missing_skills.map(s => `<li>${s}</li>`).join("")}
-                    </ul>
-                </div>
-            `;
-        });
-
-    } catch (error) {
-        console.error(error);
-        results.innerHTML = "ERROR: " + error;
+    if (data.error) {
+        results.innerHTML =
+            `<h3>ERROR: ${data.error}</h3>`;
+        return;
     }
+
+    if (!data.matches) {
+        results.innerHTML =
+            `<h3>No matches returned</h3>`;
+        return;
+    }
+
+    results.innerHTML = "";
+
+    data.matches.forEach(job => {
+
+        results.innerHTML += `
+            <div style="
+                border:1px solid #ccc;
+                margin:10px;
+                padding:15px;
+            ">
+                <h3>${job.title}</h3>
+                Score: ${job.score}%
+            </div>
+        `;
+    });
 }
 
 async function register() {
@@ -93,16 +90,26 @@ async function register() {
 }
 
 async function login() {
+
     const res = await fetch(`${API}/login`, {
         method:"POST",
-        headers:{ "Content-Type":"application/json" },
+        headers:{
+            "Content-Type":"application/json"
+        },
         body:JSON.stringify({
-            email:email.value,
-            password:password.value
+            email: email.value,
+            password: password.value
         })
     });
 
     const data = await res.json();
+
+    console.log(data);
+
+    if (data.error) {
+        alert(data.error);
+        return;
+    }
 
     localStorage.setItem("token", data.token);
 
