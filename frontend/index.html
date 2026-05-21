@@ -24,12 +24,13 @@
 
 <h2>Dashboard</h2>
 <div id="dashboard"></div>
+<canvas id="historyChart"></canvas>
 
 <button onclick="loadHistory()">
 Load History
 </button>
 
-<script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js">
 const API = "https://ai-resume-builder-job-fit-analyzer.onrender.com";
 
 async function match() {
@@ -132,25 +133,48 @@ async function loadHistory() {
         return;
     }
 
-    if (!data.history) {
-        dashboard.innerHTML =
-            `<h3>No history found</h3>`;
-        return;
-    }
-
     dashboard.innerHTML = `
         <h3>${data.email}</h3>
-        ${data.history.map(h => `
+    `;
+
+    const labels = [];
+    const scores = [];
+
+    data.history.forEach(h => {
+
+        dashboard.innerHTML += `
             <div style="
                 border:1px solid #ccc;
-                padding:15px;
                 margin:10px;
+                padding:15px;
             ">
                 <b>${h.job}</b><br>
                 Score: ${h.score}%
             </div>
-        `).join("")}
-    `;
+        `;
+
+        labels.push(h.job);
+        scores.push(h.score);
+    });
+
+    const ctx =
+        document
+        .getElementById("historyChart")
+        .getContext("2d");
+
+    new Chart(ctx, {
+        type: "bar",
+        data: {
+            labels: labels,
+            datasets: [{
+                label: "Match Score %",
+                data: scores
+            }]
+        },
+        options: {
+            responsive: true
+        }
+    });
 }
 </script>
 </body>

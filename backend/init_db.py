@@ -4,7 +4,7 @@ def init_db():
     conn = get_conn()
     cursor = conn.cursor()
 
-    cursor.execute("DROP TABLE IF EXISTS users")
+    #cursor.execute("DROP TABLE IF EXISTS users")
 
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS users (
