@@ -119,20 +119,30 @@ async function loadHistory() {
 
     const data = await res.json();
 
+    if (data.error) {
+        dashboard.innerHTML =
+            `<h3>Error: ${data.error}</h3>`;
+        return;
+    }
+
+    if (!data.history) {
+        dashboard.innerHTML =
+            `<h3>No history found</h3>`;
+        return;
+    }
+
     dashboard.innerHTML = `
         <h3>${data.email}</h3>
-        ${
-            data.history.map(h => `
-                <div style="
-                    border:1px solid #ccc;
-                    margin:10px;
-                    padding:15px;
-                ">
-                    <b>${h.job}</b><br>
-                    Score: ${h.score}%
-                </div>
-            `).join("")
-        }
+        ${data.history.map(h => `
+            <div style="
+                border:1px solid #ccc;
+                padding:15px;
+                margin:10px;
+            ">
+                <b>${h.job}</b><br>
+                Score: ${h.score}%
+            </div>
+        `).join("")}
     `;
 }
 </script>

@@ -33,73 +33,80 @@ def health():
 @app.post("/match")
 def match(data: dict):
 
-    cv = data.get("cv", "").lower()
-
-    conn = get_conn()
-    cur = conn.cursor()
-
-    cur.execute(
-        "INSERT INTO cv_profiles (cv_text) VALUES (%s) RETURNING id",
-        (cv,)
-    )
-    cv_id = cur.fetchone()[0]
-
-    jobs = [
-        {
-            "title": "Python Backend Developer",
-            "company": "TechCorp",
-            "location": "Remote",
-            "description": "python fastapi postgresql docker api"
-        },
-        {
-            "title": "DevOps Engineer",
-            "company": "CloudOps",
-            "location": "EU",
-            "description": "docker aws linux kubernetes"
-        },
-        {
-            "title": "Data Engineer",
-            "company": "DataWorks",
-            "location": "Remote",
-            "description": "python sql postgresql api"
-        }
-    ]
-
-    matches = []
-
-    for job in jobs:
-
-        result = score_cv_job(cv, job["description"])
-
-        cursor.execute("""
-            INSERT INTO job_matches
-            (cv_id, job_title, score, strengths, missing_skills)
-            VALUES (%s, %s, %s, %s, %s)
-        """, (
-            cv_id,
-            job["title"],
-            result["score"],
-            ",".join(result["strengths"]),
-            ",".join(result["missing_skills"])
-        ))
+    try:
 
 
-        matches.append({
-            "title": job["title"],
-            "company": job["company"],
-            "location": job["location"],
-            "score": min(score, 100),
-            "strengths": strengths,
-            "missing_skills": missing
-        })
+        cv = data.get("cv", "").lower()
 
-    conn.commit()
-    cursor.close()
-    conn.close()
+        conn = get_conn()
+        cur = conn.cursor()
 
-    matches.sort(key=lambda x: x["score"], reverse=True)
+        cur.execute(
+            "INSERT INTO cv_profiles (cv_text) VALUES (%s) RETURNING id",
+            (cv,)
+        )
+        cv_id = cur.fetchone()[0]
 
-    return {"matches": matches}
+        jobs = [
+            {
+                "title": "Python Backend Developer",
+                "company": "TechCorp",
+                "location": "Remote",
+                "description": "python fastapi postgresql docker api"
+            },
+            {
+                "title": "DevOps Engineer",
+                "company": "CloudOps",
+                "location": "EU",
+                "description": "docker aws linux kubernetes"
+            },
+            {
+                "title": "Data Engineer",
+                "company": "DataWorks",
+                "location": "Remote",
+                "description": "python sql postgresql api"
+            }
+        ]
+        
+
+        matches = []
+
+        for job in jobs:
+
+            result = score_cv_job(cv, job["description"])
+
+            cursor.execute("""
+                INSERT INTO job_matches
+                (cv_id, job_title, score, strengths, missing_skills)
+                VALUES (%s, %s, %s, %s, %s)
+            """, (
+                cv_id,
+                job["title"],
+                result["score"],
+                ",".join(result["strengths"]),
+                ",".join(result["missing_skills"])
+            ))
+
+
+            matches.append({
+                "title": job["title"],
+                "company": job["company"],
+                "location": job["location"],
+                "score": min(result["score"], 100),
+                "strengths": result["strengths"],
+                "missing_skills": result["missing_skills"]
+            })
+
+        conn.commit()
+        cursor.close()
+        conn.close()
+
+        matches.sort(key=lambda x: x["score"], reverse=True)
+
+        return {"matches": matches}
+    
+    except Exception as e:
+        return {"error": str(e)}
 
 @app.post("/register")
 def register(data: dict):
@@ -182,8 +189,7 @@ def history(token: str):
         """)
         rows = cursor.fetchall()
 
-    except Exception as e:
-        return {"error": str(e)}
+    
 
         cursor.close()
         conn.close()
@@ -198,5 +204,7 @@ def history(token: str):
                 for r in rows
             ]
         }
+    except Exception as e:
+        return {"error": str(e)}
 
     
