@@ -12,10 +12,9 @@ def score_cv_job(cv: str, job_desc: str):
 
     for k in keywords:
         if k in cv and k in job_desc:
-            score += 12
             strengths.append(k)
         elif k in job_desc and k not in cv:
-            missing.append(k)
+            missing_skills.append(k)
     
     score = int(
         len(strengths) /
