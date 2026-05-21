@@ -39,13 +39,13 @@ def match(data: dict):
         cv = data.get("cv", "").lower()
 
         conn = get_conn()
-        cur = conn.cursor()
+        cursor = conn.cursor()
 
-        cur.execute(
+        cursor.execute(
             "INSERT INTO cv_profiles (cv_text) VALUES (%s) RETURNING id",
             (cv,)
         )
-        cv_id = cur.fetchone()[0]
+        cv_id = cursor.fetchone()[0]
 
         jobs = [
             {
