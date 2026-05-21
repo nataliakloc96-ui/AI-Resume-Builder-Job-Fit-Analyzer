@@ -7,6 +7,8 @@ from db import get_conn
 from init_db import init_db
 from services.ai_service import score_cv_job
 from auth import hash_password, verify_password, create_token
+from jose import jwt
+import os
 
 
 app = FastAPI()
@@ -21,7 +23,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-
+JWT_SECRET = os.getenv("JWT_SECRET")
 
 @app.get("/health")
 def health():
@@ -156,5 +158,42 @@ def login(data: dict):
     finally:
         cursor.close()
         conn.close()
+
+@app.get("/history")
+def history(token: str):
+
+    try:
+        payload = jwt.decode(
+            token,
+            JWT_SECRET,
+            algorithms=["HS256"]
+        )
+        email = payload["sub"]
+
+        conn = get_conn()
+        cursor = conn.cursor()
+
+        cursor.execute("""
+            SELECT jm.job_title, jm.score
+            FROM job_machines jm
+            JOIN cv_profiles cp ON jm.cv_id = cp.id
+            ORDER BY jm.id DESC
+            LIMIT 20
+        """)
+        rows = cursor.fetchall()
+
+        cursor.close()
+        conn.close()
+
+        return {
+            "email": email,
+            "history": [
+                {
+                    "job": r[0],
+                    "score": r[1]
+                }
+                for r in rows
+            ]
+        }
 
     
