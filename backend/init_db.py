@@ -4,6 +4,16 @@ def init_db():
     conn = get_conn()
     cursor = conn.cursor()
 
+    cursor.execute("DROP TABLE IF EXISTS users")
+
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS users (
+        id SERIAL PRIMARY KEY,
+        email TEXT UNIQUE,
+        password TEXT
+    )
+    """)
+
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS cv_profiles (
         id SERIAL PRIMARY KEY,
@@ -22,13 +32,7 @@ def init_db():
     )
     """)
 
-    cursor.execute("""
-    CREATE TABLE IF NOT EXISTS users (
-        id SERIAL PRIMARY KEY,
-        email TEXT UNIQUE,
-        password TEXT
-    )
-    """)
+    
 
     conn.commit()
     cursor.close()
