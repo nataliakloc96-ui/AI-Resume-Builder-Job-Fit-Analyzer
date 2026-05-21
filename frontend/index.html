@@ -25,6 +25,9 @@
 <h2>Dashboard</h2>
 <div id="dashboard"></div>
 <canvas id="historyChart"></canvas>
+<button onclick="downloadReport()">
+Download PDF Report
+</button>
 
 <button onclick="loadHistory()">
 Load History
@@ -177,6 +180,17 @@ async function loadHistory() {
             responsive: true
         }
     });
+}
+
+async function downloadReport() {
+
+    const token =
+        localStorage.getItem("token");
+
+    window.open(
+        `${API}/report?token=${token}`,
+        "_blank"
+    );
 }
 </script>
 </body>

@@ -5,3 +5,4 @@ requests
 python-dotenv
 python-jose
 passlib[bcrypt]
+reportlab

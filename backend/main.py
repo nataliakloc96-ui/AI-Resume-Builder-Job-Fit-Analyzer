@@ -1,5 +1,8 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import FileResponse
+from reportlab.platypus import SimpleDocTemplate, Paragraph
+from reportlab.lib.styles import getSampleStyleSheet
 
 from config import FRONTEND_URL
 from routes import match, jobs
@@ -206,5 +209,61 @@ def history(token: str):
         }
     except Exception as e:
         return {"error": str(e)}
+    
+@app.get("/report")
+def report(token: str):
+
+    payload = jwt.decode(
+        token,
+        JWT_SECRET,
+        algorithms=["HS256"]
+    )
+
+    email = payload["sub"]
+
+    conn = get_conn()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        SELECT job_title, score
+        FROM job_matches
+        ORDER BY id DESC
+        LIMIT 20
+    """)
+
+    rows = cursor.fetchall()
+
+    filename = "report.pdf"
+
+    doc = SimpleDocTemplate(filename)
+    styles = getSampleStyleSheet()
+
+    content = []
+
+    content.append(
+        Paragraph(
+            f"AI Resume Report - {email}",
+            styles["Title"]
+        )
+    )
+
+    for r in rows:
+        content.append(
+            Paragraph(
+                f"{r[0]} - {r[1]}%",
+                styles["Normal"]
+            )
+        )
+    
+    doc.build(content)
+
+    cursor.close()
+    conn.close()
+
+    return FileResponse(
+        filename,
+        media_type="application/pdf",
+        filename="resume_report.pdf"
+    )
 
     
