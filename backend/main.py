@@ -182,6 +182,9 @@ def history(token: str):
         """)
         rows = cursor.fetchall()
 
+    except Exception as e:
+        return {"error": str(e)}
+
         cursor.close()
         conn.close()
 
