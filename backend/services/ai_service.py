@@ -11,7 +11,7 @@ def score_cv_job(cv: str, job_desc: str):
     for k in keywords:
         if k in cv and k in job_desc:
             score += 12
-            strenghts.append(k)
+            strengths.append(k)
         elif k in job_desc and k not in cv:
             missing.append(k)
     

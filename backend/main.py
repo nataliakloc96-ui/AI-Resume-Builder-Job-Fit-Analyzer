@@ -182,7 +182,7 @@ def history(token: str):
 
         cursor.execute("""
             SELECT jm.job_title, jm.score
-            FROM job_machines jm
+            FROM job_matches jm
             JOIN cv_profiles cp ON jm.cv_id = cp.id
             ORDER BY jm.id DESC
             LIMIT 20
