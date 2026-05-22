@@ -42,7 +42,7 @@ def score_cv_job(cv: str, job_desc: str):
 def embedding(text):
 
     response = client.embeddings.create(
-        model="rext-embedding-3-small",
+        model="text-embedding-3-small",
         input=text
     )
 
