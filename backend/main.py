@@ -63,7 +63,7 @@ def match(data: dict):
         """)
         count = cursor.fetchone()[0]
 
-        if count >= 3:
+        if count >= 999:
             return {
                 "error":
                 "Free plan limit reached. Upgrade to Pro."
