@@ -18,6 +18,10 @@
 
 <button onclick="match()">Analyze</button>
 
+<button onclick="upgrade()">
+Upgrade to Pro
+</button>
+
 <hr>
 
 <div id="results"></div>
@@ -191,6 +195,17 @@ async function downloadReport() {
         `${API}/report?token=${token}`,
         "_blank"
     );
+}
+
+async function upgrade() {
+
+    const res = await fetch(
+        `${API}/create-checkout`
+    );
+
+    const data = await res.json();
+
+    window.location.href = data.url;
 }
 </script>
 </body>

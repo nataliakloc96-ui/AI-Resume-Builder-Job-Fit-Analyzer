@@ -12,11 +12,14 @@ from services.ai_service import score_cv_job
 from auth import hash_password, verify_password, create_token
 from jose import jwt
 import os
+import stripe
 
 
 app = FastAPI()
 
 init_db()
+
+stripe.api_key = os.getenv("STRIPE_API_KEY")
 
 app.add_middleware(
     CORSMiddleware,
@@ -49,6 +52,21 @@ def match(data: dict):
             (cv,)
         )
         cv_id = cursor.fetchone()[0]
+
+        cursor.execute("""
+        SELECT COUNT(*)
+        FROM cv_profiles
+        """)
+        count = cursor.fetchone()[0]
+
+        if count >= 3:
+            return {
+                "error":
+                "Free plan limit reached. Upgrade to Pro."
+            }
+
+
+        
 
         jobs = [
             {
@@ -266,4 +284,33 @@ def report(token: str):
         filename="resume_report.pdf"
     )
 
+@app.get("/create-checkout")
+def create_checkout():
+
+    try:
+        session = stripe.checkout.Session.create(
+            payment_method_types=["card"],
+            line_items=[{
+                "price_data": {
+                    "currency": "usd",
+                    "product_data": {
+                        "name": "AI Resume Pro"
+                    },
+                    "unit_amount": 999
+                },
+                "quantity": 1
+            }],
+            mode="payment",
+
+            success_url=
+            "https://ai-resume-builder-job-fit-analyzer-jade.vercel.app",
+
+            cancel_url=
+            "https://ai-resume-builder-job-fit-analyzer-jade.vercel.app"
+        )
+
+        return {"url": session.url}
+    
+    except Exception as e:
+        return {"error": str(e)}
     
