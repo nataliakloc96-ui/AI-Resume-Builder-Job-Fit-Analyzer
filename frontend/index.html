@@ -21,6 +21,9 @@
 <button onclick="upgrade()">
 Upgrade to Pro
 </button>
+<button onclick="loadAdmin()">
+Admin Analytics
+</button>
 
 <hr>
 
@@ -28,6 +31,7 @@ Upgrade to Pro
 
 <h2>Dashboard</h2>
 <div id="dashboard"></div>
+<div id="adminPanel"></div>
 <canvas id="historyChart"></canvas>
 <button onclick="downloadReport()">
 Download PDF Report
@@ -218,6 +222,51 @@ async function upgrade() {
     }
 
     window.location.href = data.url;
+}
+
+async function loadAdmin() {
+
+    const res = await fetch(
+        `${API}/admin`
+    );
+
+    const data = await res.json();
+
+    adminPanel.innerHTML = `
+        <h2>Admin Analytics</h2>
+
+        <div style="
+            border:1px solid #ccc;
+            padding:20px;
+            margin:10px;
+        ">
+            Users: ${data.users}
+        </div>
+
+        <div style="
+            border:1px solid #ccc;
+            padding:20px;
+            margin:10px;
+        ">
+            Analyses: ${data.analyses}
+        </div>
+
+        <div style="
+            border:1px solid #ccc;
+            padding:20px;
+            margin:10px;
+        ">
+            Revenue: $${data.revenue}
+        </div>
+
+        <div style="
+            border:1px solid #ccc;
+            padding:20px;
+            margin:10px;
+        ">
+            Conversion: ${data.conversion}
+        </div>
+    `;
 }
 </script>
 </body>

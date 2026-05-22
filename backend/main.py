@@ -314,3 +314,37 @@ def create_checkout():
     except Exception as e:
         return {"error": str(e)}
     
+@app.get("/admin")
+def admin():
+
+    conn = get_conn()
+    cursor = conn.cursor()
+
+    cursor.execute(
+        "SELECT COUNT(*) FROM users"
+    )
+    users = cursor.fetchone()[0]
+
+    cursor.execute(
+        "SELECT COUNT(*) FROM cv_profiles"
+    )
+
+    analyses = cursor.fetchone()[0]
+
+    revenue = users * 9.99
+
+    conversion = (
+        100 if users == 0
+        else round((analyses / users), 2)
+
+    )
+
+    cursor.close()
+    conn.close()
+
+    return {
+        "users": users,
+        "analyses": analyses,
+        "revenue": revenue,
+        "conversion": conversion
+    }
