@@ -205,6 +205,18 @@ async function upgrade() {
 
     const data = await res.json();
 
+    console.log(data);
+
+    if (data.error) {
+        alert(data.error);
+        return;
+    }
+
+    if (!data.url) {
+        alert("Stripe checkout URL missing");
+        return;
+    }
+
     window.location.href = data.url;
 }
 </script>
