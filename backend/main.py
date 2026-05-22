@@ -19,7 +19,7 @@ app = FastAPI()
 
 init_db()
 
-stripe.api_key = os.getenv("STRIPE_API_KEY")
+stripe.api_key = os.getenv("STRIPE_SECRET_KEY")
 
 app.add_middleware(
     CORSMiddleware,
