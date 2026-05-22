@@ -7,3 +7,5 @@ python-jose
 passlib[bcrypt]
 reportlab
 stripe
+openai
+numpy

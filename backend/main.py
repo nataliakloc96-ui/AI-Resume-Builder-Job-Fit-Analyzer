@@ -15,11 +15,14 @@ import os
 import stripe
 
 
+
 app = FastAPI()
 
 init_db()
 
 stripe.api_key = os.getenv("STRIPE_SECRET_KEY")
+
+
 
 app.add_middleware(
     CORSMiddleware,
@@ -30,6 +33,7 @@ app.add_middleware(
 )
 
 JWT_SECRET = os.getenv("JWT_SECRET")
+
 
 @app.get("/health")
 def health():
