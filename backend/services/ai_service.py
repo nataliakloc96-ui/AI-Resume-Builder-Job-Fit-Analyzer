@@ -1,13 +1,20 @@
-import os
-import numpy as np 
-from openai import OpenAI
+import math
 
+def tokenize(text):
+    return set(
+        text.lower().split()
+    )
 
-client = OpenAI(
-    api_key=os.getenv("OPENAI_API_KEY")
-)
+def cosine(a,b):
 
-
+    common = len(a & b)
+    if common == 0:
+        return 0
+    
+    return common / math.sqrt(
+        len(a) * len(b)
+    )
+    
 
 def score_cv_job(cv: str, job_desc: str):
     
@@ -60,15 +67,17 @@ def cosine(a, b):
 
 def score_cv_job(cv, job_desc):
 
-    cv_vec = embedding(cv)
-    job_vec = embedding(job_desc)
+    cv_tokens = tokenize(cv)
+    job_tokens = tokenize(job_desc)
 
     similarity = cosine(
-        cv_vec,
-        job_vec
+        cv_tokens,
+        job_tokens
     )
 
     score = int(similarity * 100)
+
+    strengths = []
 
     if score < 0:
         score = 0
@@ -83,9 +92,14 @@ def score_cv_job(cv, job_desc):
             "Strong semantic fit"
         )
     
-    elif score > 60:
+    elif score > 50:
         strengths.append(
-            "Moderate semantic fit"
+            "Moderate alignment"
+        )
+    
+    else: 
+        strengths.append(
+            "Weak alignment"
         )
     
     missing_skills = []
