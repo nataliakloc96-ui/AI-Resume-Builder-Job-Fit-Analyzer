@@ -53,17 +53,6 @@ def embedding(text):
         input=text
     )
 
-    return response.data[0].embedding
-
-def cosine(a, b):
-
-    a = np.array(a)
-    b = np.array(b)
-
-    return np.dot(a, b) / (
-        np.linalg.norm(a)
-        * np.linalg.norm(b)
-    )
 
 def score_cv_job(cv, job_desc):
 
