@@ -9,3 +9,4 @@ reportlab
 stripe
 openai
 numpy
+beautifulsoup4

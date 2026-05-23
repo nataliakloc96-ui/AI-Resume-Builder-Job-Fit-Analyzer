@@ -13,6 +13,7 @@ from auth import hash_password, verify_password, create_token
 from jose import jwt
 import os
 import stripe
+from job_scraper import fetch_jobs
 
 
 
@@ -72,27 +73,15 @@ def match(data: dict):
 
         
 
-        jobs = [
-            {
+        jobs = fetch_jobs()
+
+        if not jobs:
+            jobs = [{
                 "title": "Python Backend Developer",
-                "company": "TechCorp",
-                "location": "Remote",
-                "description": "python fastapi postgresql docker api"
-            },
-            {
-                "title": "DevOps Engineer",
-                "company": "CloudOps",
-                "location": "EU",
-                "description": "docker aws linux kubernetes"
-            },
-            {
-                "title": "Data Engineer",
-                "company": "DataWorks",
-                "location": "Remote",
-                "description": "python sql postgresql api"
-            }
-        ]
-        
+                "company": "Fallback",
+                "location": "remote",
+                "description": "Python FastAPI PostgreSQL Docker API"
+            }]
 
         matches = []
 
