@@ -68,6 +68,16 @@ POST /generate-resume
 
 ---
 
+## 🌐 Live Demo
+
+Frontend:
+ai-resume-builder-job-fit-analyzer-jade.vercel.app
+
+API:
+https://ai-resume-builder-job-fit-analyzer.onrender.com
+
+---
+
 ## 👩‍💻 Author
 
 Natalia Kurek
